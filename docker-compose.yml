@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: wallet-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wallet_system
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:7
+    container_name: wallet-redis
+    ports:
+      - "6379:6379"
+
+  app:
+    build: ./backend
+    container_name: wallet-app
+    ports:
+      - "8082:8082"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/wallet_system?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    depends_on:
+      - mysql
+      - redis
